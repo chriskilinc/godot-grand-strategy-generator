@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://bik0jkhmyukkp"]
+
+[ext_resource type="Script" path="res://Scenes/RegionArea.cs" id="1_nf4q7"]
+
+[node name="RegionArea" type="Area2D"]
+script = ExtResource("1_nf4q7")
+
+[connection signal="child_entered_tree" from="." to="." method="OnChildEnteredTree"]
+[connection signal="input_event" from="." to="." method="OnInputEventSignal"]
+[connection signal="mouse_entered" from="." to="." method="OnMouseEntered"]
+[connection signal="mouse_exited" from="." to="." method="OnMouseExited"]
