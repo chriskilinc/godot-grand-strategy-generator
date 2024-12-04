@@ -5,53 +5,46 @@ using System.Linq;
 public partial class Main : Node2D
 {
     PackedScene _regionAreaScene;
-    Node _regions;
+
+    [Export]
+    private StaticData _staticData;
 
     public override void _Ready()
     {
         // Called every time the node is added to the scene.
         GD.Print("Hello, World!");
+        _staticData = GetNode<StaticData>("/root/StaticData");
         _regionAreaScene = GD.Load<PackedScene>("res://Scenes/region_area.tscn");
+
         GenerateRegions();
     }
 
     private void GenerateRegions()
     {
         var mapImage = GD.Load<Texture2D>("res://MapData/map.png").GetImage();
-        var pixelColorDict = GetPixelColorDict(mapImage);
-        var mapData = ImportFile("MapData/mapData.json").AsGodotDictionary<string, string>();
-        CreateRegionNode();
-        CreateRegionAreas(mapImage, pixelColorDict, mapData);
-    }
+        var pixelColorDictionary = GetPixelColorDictionary(mapImage);
+        var regions = CreateRegionNode();
+        var mapData = _staticData.data;
 
-    private void CreateRegionNode()
-    {
-        // Only call this once in _Ready
-        Node regions = new Node
+        foreach (KeyValuePair<string, Godot.Collections.Dictionary<string, string>> region in mapData)
         {
-            Name = "Regions",
-            UniqueNameInOwner = true
-        };
-
-        AddChild(regions);
-        _regions = regions;
-    }
-
-    private void CreateRegionAreas(Image image, Dictionary<string, Vector2[]> pixelColorDict, Godot.Collections.Dictionary<string, string> mapData)
-    {
-        foreach (KeyValuePair<string, string> region in mapData)
-        {
-            // region.Key is Color in hex format
-            // region.Value is Region Name
+            var id = region.Key;
+            var regionData = region.Value;
 
             RegionArea regionArea = _regionAreaScene.Instantiate<RegionArea>();
-            regionArea.regionName = region.Value;
-            regionArea.regionId = region.Key;
-            regionArea.Name = region.Key;
+            regionArea.Name = id;
+            regionArea.UniqueNameInOwner = true;
 
-            _regions.AddChild(regionArea);
+            regionData.TryGetValue("owner", out var owner);
+            regionData.TryGetValue("name", out var regionName);
 
-            Godot.Collections.Array<Vector2[]> polygons = GetPolygons(image, region.Key, pixelColorDict);
+            regionArea.regionId = id;
+            regionArea.regionName = regionName;
+            regionArea.owner = owner;
+
+            regions.AddChild(regionArea);
+
+            var polygons = GetPolygons(mapImage, region.Key, pixelColorDictionary);
 
             foreach (Vector2[] polygon in polygons)
             {
@@ -67,8 +60,9 @@ public partial class Main : Node2D
         }
     }
 
-    private Dictionary<string, Vector2[]> GetPixelColorDict(Image image)
+    private static Dictionary<string, Vector2[]> GetPixelColorDictionary(Image image)
     {
+        // Store each pixel color in a dictionary with the pixel's position
         Dictionary<string, Vector2[]> pixelColorDict = new Dictionary<string, Vector2[]>();
 
         for (int y = 0; y < image.GetHeight(); y++)
@@ -92,22 +86,19 @@ public partial class Main : Node2D
         return pixelColorDict;
     }
 
-    private Variant ImportFile(string path)
+    private Node CreateRegionNode()
     {
-        FileAccess file = FileAccess.Open(path, FileAccess.ModeFlags.Read);
-        if (file == null)
+        Node regions = new Node
         {
-            GD.Print("File not found");
-            return new Variant();
-        }
-        else
-        {
-            GD.Print("File found");
-            return Json.ParseString(file.GetAsText().Replace("_", " "));
-        }
+            Name = "Regions",
+            UniqueNameInOwner = true
+        };
+
+        AddChild(regions);
+        return regions;
     }
 
-    private Godot.Collections.Array<Vector2[]> GetPolygons(Image image, string regionColor, Dictionary<string, Vector2[]> pixelColorDict)
+    private static Godot.Collections.Array<Vector2[]> GetPolygons(Image image, string regionColor, Dictionary<string, Vector2[]> pixelColorDict)
     {
         Image targetImage = Image.CreateEmpty(image.GetWidth(), image.GetHeight(), false, Image.Format.Rgba8);
         foreach (Vector2 value in pixelColorDict[regionColor])

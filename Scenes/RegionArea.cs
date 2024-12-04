@@ -9,6 +9,9 @@ public partial class RegionArea : Area2D
     [Export]
     public string regionName = "";
 
+    [Export]
+    public string owner = "";
+
     static StringName _inputMouseLeft = new StringName("mouse_left");
 
     public void OnInputEventSignal(Node viewport, InputEvent @event, int shapeIdx)
@@ -17,7 +20,7 @@ public partial class RegionArea : Area2D
         {
             if (mouseButton.IsActionPressed(_inputMouseLeft))
             {
-                GD.Print("Clicked RegionArea: " + regionName);
+                GD.Print($"Clicked RegionArea: {regionId}, {regionName}, {owner}");
             }
         }
     }

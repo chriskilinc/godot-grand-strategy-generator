@@ -1,7 +1,22 @@
 {
-	"#b58640": "East Iceland",
-	"#348400": "West Iceland",
-	"#cb424f": "Greenland",
-	"#263c7e": "South Greenland",
-	"#a63ead": "West Greenland"
+	"#b58640": {
+		"name": "East Iceland",
+		"owner": "ICE"
+	},
+	"#348400": {
+		"name": "West Iceland",
+		"owner": "ICE"
+	},
+	"#cb424f": {
+		"name": "Greenland",
+		"owner": "NOR"
+	},
+	"#263c7e": {
+		"name": "South Greenland",
+		"owner": "NOR"
+	},
+	"#a63ead": {
+		"name": "West Greenland",
+		"owner": "NOR"
+	}
 }
