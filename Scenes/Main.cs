@@ -24,7 +24,7 @@ public partial class Main : Node2D
         var mapImage = GD.Load<Texture2D>("res://MapData/map.png").GetImage();
         var pixelColorDictionary = GetPixelColorDictionary(mapImage);
         var regions = CreateRegionNode();
-        var mapData = _staticData.data;
+        var mapData = _staticData.mapData;
 
         foreach (KeyValuePair<string, Godot.Collections.Dictionary<string, string>> region in mapData)
         {
@@ -38,9 +38,9 @@ public partial class Main : Node2D
             regionData.TryGetValue("owner", out var owner);
             regionData.TryGetValue("name", out var regionName);
 
-            regionArea.regionId = id;
-            regionArea.regionName = regionName;
-            regionArea.owner = owner;
+            regionArea._regionId = id;
+            regionArea._regionName = regionName;
+            regionArea._owner = owner;
 
             regions.AddChild(regionArea);
 

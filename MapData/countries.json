@@ -1,0 +1,10 @@
+{
+  "ICE": {
+    "name": "Iceland",
+    "color": "#0052a5"
+  },
+  "NOR": {
+    "name": "Norway",
+    "color": "#75A5BC"
+  }
+}

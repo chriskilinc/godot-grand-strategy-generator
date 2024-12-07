@@ -1,18 +1,35 @@
+using System.Linq;
 using Godot;
 
 public partial class RegionArea : Area2D
 {
 
     [Export]
-    public string regionId = "";
+    public string _regionId = "";
 
     [Export]
-    public string regionName = "";
+    public string _regionName = "";
 
     [Export]
-    public string owner = "";
+    public string _owner = "";
+
+    [Export]
+    public Color _color;    // country color, TODO: update if owner change
+
+
+    [Export]
+    private StaticData _staticData;
 
     static StringName _inputMouseLeft = new StringName("mouse_left");
+
+    public override void _Ready()
+    {
+        _staticData = GetNode<StaticData>("/root/StaticData");
+        var countriesData = _staticData.countriesData;
+        var countryData = countriesData.FirstOrDefault(x => x.Key == _owner).Value;
+        countryData.TryGetValue("color", out var color);
+        _color = new Color(color);
+    }
 
     public void OnInputEventSignal(Node viewport, InputEvent @event, int shapeIdx)
     {
@@ -20,7 +37,7 @@ public partial class RegionArea : Area2D
         {
             if (mouseButton.IsActionPressed(_inputMouseLeft))
             {
-                GD.Print($"Clicked RegionArea: {regionId}, {regionName}, {owner}");
+                GD.Print($"Clicked RegionArea: {_regionId}, {_regionName}, {_owner}");
             }
         }
     }
@@ -32,7 +49,7 @@ public partial class RegionArea : Area2D
             if (child is Polygon2D)
             {
                 var polygon = child as Polygon2D;
-                polygon.Color = new Color(1, 1, 1, 1);
+                polygon.Color = new Color(1,1,1);
             }
         }
     }
@@ -44,7 +61,7 @@ public partial class RegionArea : Area2D
             if (child is Polygon2D)
             {
                 var polygon = child as Polygon2D;
-                polygon.Color = new Color(1, 1, 1, 0.5f);
+                polygon.Color = _color;
             }
         }
     }
@@ -55,8 +72,8 @@ public partial class RegionArea : Area2D
         if (node is Polygon2D)
         {
             var polygon = node as Polygon2D;
-            polygon.Color = new Color(1, 1, 1, 0.5f);
-            polygon.Name = "polygon: " + regionName;
+            polygon.Color = _color;
+            polygon.Name = "polygon: " + _regionName;
         }
     }
 }

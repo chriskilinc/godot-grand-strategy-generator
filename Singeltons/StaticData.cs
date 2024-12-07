@@ -3,13 +3,18 @@ using Godot;
 public partial class StaticData : Node
 {
     [Export]
-    public Godot.Collections.Dictionary<string, Godot.Collections.Dictionary<string, string>> data = new();
-    private string filePath = "res://MapData/mapData.json";
+    public Godot.Collections.Dictionary<string, Godot.Collections.Dictionary<string, string>> mapData = new();
+    [Export]
+    public Godot.Collections.Dictionary<string, Godot.Collections.Dictionary<string, string>> countriesData = new();
+    
+    private string mapDataFilePath = "res://MapData/mapData.json";
+    private string countriesDataFilePath = "res://MapData/countries.json";
 
 
     public override void _Ready()
     {
-        data = LoadJsonFile(filePath);
+        mapData = LoadJsonFile(mapDataFilePath);
+        countriesData = LoadJsonFile(countriesDataFilePath);
     }
 
     private Godot.Collections.Dictionary<string, Godot.Collections.Dictionary<string, string>> LoadJsonFile(string path)
@@ -34,5 +39,4 @@ public partial class StaticData : Node
         }
         return null;
     }
-
 }
